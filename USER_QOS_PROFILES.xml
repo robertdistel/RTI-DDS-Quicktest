@@ -147,7 +147,16 @@ RTI Connext user manual.
             	</initial_peers>
             </discovery>
              -->
-	             <discovery_config>
+              <discovery>
+            	<multicast_receive_addresses/>
+            	<initial_peers>
+            		<element>
+            			127.0.0.1
+            		</element>
+            	</initial_peers>
+              </discovery>
+                 <discovery_config>
+                 
 	             	<subscription_writer_publish_mode>
 	            		<kind>ASYNCHRONOUS_PUBLISH_MODE_QOS</kind>
 	            		<flow_controller_name>dds.flow_controller.token_bucket.CUSTOM_FLOW_CONTROLLER</flow_controller_name>
@@ -156,6 +165,7 @@ RTI Connext user manual.
 	            		<kind>ASYNCHRONOUS_PUBLISH_MODE_QOS</kind>
 	            		<flow_controller_name>dds.flow_controller.token_bucket.CUSTOM_FLOW_CONTROLLER</flow_controller_name>
 	          		</publication_writer_publish_mode>
+	          		
 	          	</discovery_config>
 	     
                 <!--
@@ -168,8 +178,12 @@ RTI Connext user manual.
                     <role_name>testParticipantRole</role_name>
                 </participant_name>
 				  <transport_builtin>
+<!--
     				<mask>UDPv4</mask>
-  				  </transport_builtin>
+ --> 
+    				<mask>MASK_NONE</mask>
+
+   				  </transport_builtin>
   				  <property>
 					<value>
 <!-- 					
@@ -178,10 +192,41 @@ RTI Connext user manual.
 					dds.transport.UDPv4.builtin.parent.deny_interfaces
 					</name>
 					<value>
-					
 					</value>
 					</element>
- -->
+-->					
+<!-- -->
+ 				    <element>
+				      <name>dds.transport.load_plugins</name>
+				      <value>dds.transport.DTLS.dtls1</value>
+				    </element>
+ <!-- -->
+ 				    <element>
+				      <!-- Setting this property has no effect if linking statically and setting create_function_ptr. -->
+				      <name>dds.transport.DTLS.dtls1.library</name>
+				      <value>nddstransporttls</value> <!-- Must be this value if linking dynamically. -->
+				    </element>
+				    <element> <!-- Only needed if linking dynamically. -->
+				      <name>dds.transport.DTLS.dtls1.create_function</name>
+				      <value>NDDS_Transport_DTLS_create</value>
+				    </element>
+				    <element> 
+				      <name>dds.transport.DTLS.dtls1.verbosity</name>
+				      <value>1</value>
+				    </element>
+				    <element> <!-- self signed root cert. -->
+				      <name>dds.transport.DTLS.dtls1.tls.verify.ca_file</name>
+				      <value>./demoCA/cacert.pem</value> <!-- Use the same file for different Domain Participants. -->
+				    </element>
+				    <element>
+				      <name>dds.transport.DTLS.dtls1.tls.identity.certificate_chain_file</name>
+				      <value>./demoCA/private/peer1.pem</value> <!-- Use different files for different Domain Participants. -->
+				    </element> 
+				    <element>
+				      <name>dds.transport.DTLS.dtls1.tls.verify.callback</name>
+				      <value>verbose</value> <!-- want to see what goes wrong when we connect -->
+				    </element> 
+ 
 					<element>
 					<name>
 					dds.flow_controller.token_bucket.CUSTOM_FLOW_CONTROLLER.scheduling_policy
